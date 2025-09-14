@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: evolution-api
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: SERVER_PORT
+        value: "8080"
+      - key: SERVER_URL
+        value: https://CAMBIAR-DESPUES-DEL-DEPLOY.onrender.com
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: CORS_METHODS
+        value: "POST,GET,PUT,DELETE,PATCH"
+      - key: CORS_CREDENTIALS
+        value: "true"
+      - key: AUTHENTICATION_API_KEY
+        generateValue: true
+      - key: AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES
+        value: "true"
+      - key: DATABASE_PROVIDER
+        value: "sqlite"
+      - key: DATABASE_CONNECTION_URI
+        value: "file:./evolution.db"
+      - key: DATABASE_ENABLED
+        value: "true"
+      - key: QRCODE_LIMIT
+        value: "30"
+      - key: QRCODE_COLOR
+        value: "#198754"
+      - key: WEBHOOK_GLOBAL_URL
+        value: "https://n8n-a3ae.onrender.com/webhook/whatsapp-webhook"
+      - key: WEBHOOK_GLOBAL_ENABLED
+        value: "true"
+      - key: WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS
+        value: "false"
+      - key: LOG_LEVEL
+        value: "info"
+      - key: LOG_COLOR
+        value: "true"
+      - key: CLEAN_STORE_CLEANING_INTERVAL
+        value: "7200000"
+      - key: CLEAN_STORE_MESSAGE
+        value: "true"
+      - key: TZ
+        value: "America/Bogota"
+      - key: CONFIG_SESSION_PHONE_CLIENT
+        value: "Evolution API"
+      - key: CONFIG_SESSION_PHONE_NAME
+        value: "Chrome"
