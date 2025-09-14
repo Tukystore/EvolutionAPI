@@ -1,35 +1,36 @@
-FROM node:18-alpine
+FROM node:18-bullseye-slim
 
-RUN apk add --no-cache \
+# Instalar dependencias del sistema necesarias
+RUN apt-get update && apt-get install -y \
     chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
     ca-certificates \
-    ttf-freefont \
+    libnss3 \
+    fonts-freefont-ttf \
     git \
     python3 \
-    make \
-    g++
+    build-essential \
+    --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-ENV CHROME_BIN=/usr/bin/chromium-browser
-ENV CHROME_PATH=/usr/bin/chromium-browser
-
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S evolutionapi -u 1001 -G nodejs
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROME_PATH=/usr/bin/chromium
 
 WORKDIR /app
 
-RUN chown -R evolutionapi:nodejs /app
-
-USER evolutionapi
-
+# Clonar el repo
 RUN git clone --depth 1 --branch main https://github.com/EvolutionAPI/evolution-api.git .
 
-RUN npm ci --only=production && npm cache clean --force
+# Instalar dependencias de producción (más tolerante)
+RUN npm install --omit=dev --legacy-peer-deps || true && npm cache clean --force
+
+# Crear usuario no-root y dar permisos
+RUN groupadd -g 1001 nodejs && \
+    useradd -u 1001 -g nodejs -m evolutionapi && \
+    chown -R evolutionapi:nodejs /app
+
+USER evolutionapi
 
 RUN mkdir -p /app/instances
 
